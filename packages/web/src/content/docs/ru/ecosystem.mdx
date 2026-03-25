@@ -1,0 +1,78 @@
+---
+title: Экосистема
+description: Проекты и интеграции, созданные с помощью LocalCode.
+---
+
+Коллекция проектов сообщества, построенных на LocalCode.
+
+:::note
+Хотите добавить свой проект, связанный с LocalCode, в этот список? Разместите PR.
+:::
+
+Вы также можете посетить [awesome-localcode](https://github.com/awesome-localcode/awesome-localcode) и [localcode.cafe](https://localcode.cafe) — хаб, объединяющий экосистему и сообщество.
+
+---
+
+## Плагины
+
+| Имя                                                                                                | Описание                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [localcode-daytona](https://github.com/daytonaio/daytona/tree/main/libs/localcode-plugin)            | Автоматически запускайте сеансы LocalCode в изолированных песочницах Daytona с синхронизацией git и предварительным просмотром в реальном времени |
+| [localcode-helicone-session](https://github.com/H2Shami/localcode-helicone-session)                  | Автоматически внедрять заголовки сеансов Helicone для группировки запросов                                                                       |
+| [localcode-type-inject](https://github.com/nick-vi/localcode-type-inject)                            | Автоматическое внедрение типов TypeScript/Svelte в файлы, считываемые с помощью инструментов поиска                                              |
+| [localcode-openai-codex-auth](https://github.com/numman-ali/localcode-openai-codex-auth)             | Используйте подписку ChatGPT Plus/Pro вместо кредитов API                                                                                        |
+| [localcode-gemini-auth](https://github.com/jenslys/localcode-gemini-auth)                            | Используйте существующий план Gemini вместо выставления счетов через API                                                                         |
+| [localcode-antigravity-auth](https://github.com/NoeFabris/localcode-antigravity-auth)                | Используйте бесплатные модели Antigravity вместо выставления счетов через API                                                                    |
+| [localcode-devcontainers](https://github.com/athal7/localcode-devcontainers)                         | Многоветвевая изоляция контейнеров разработки с мелкими клонами и автоматическим назначением портов                                              |
+| [localcode-google-antigravity-auth](https://github.com/shekohex/localcode-google-antigravity-auth)   | Плагин Google Antigravity OAuth с поддержкой поиска Google и более надежной обработкой API                                                       |
+| [localcode-dynamic-context-pruning](https://github.com/Tarquinen/localcode-dynamic-context-pruning)  | Оптимизируйте использование токенов за счет сокращения выходных данных устаревших инструментов                                                   |
+| [localcode-vibeguard](https://github.com/inkdust2021/localcode-vibeguard)                            | Скрывайте секреты/PII, заменяя их плейсхолдерами в стиле VibeGuard перед отправкой в LLM; восстанавливайте локально                              |
+| [localcode-websearch-cited](https://github.com/ghoulr/localcode-websearch-cited.git)                 | Добавьте встроенную поддержку веб-поиска для поддерживаемых поставщиков в стиле Google                                                           |
+| [localcode-pty](https://github.com/shekohex/localcode-pty.git)                                       | Позволяет агентам ИИ запускать фоновые процессы в PTY и отправлять им интерактивные данные                                                       |
+| [localcode-shell-strategy](https://github.com/JRedeker/localcode-shell-strategy)                     | Инструкции для неинтерактивных shell-команд — предотвращают зависания из-за операций, зависящих от TTY                                           |
+| [localcode-wakatime](https://github.com/angristan/localcode-wakatime)                                | Отслеживайте использование LocalCode с помощью Wakatime                                                                                           |
+| [localcode-md-table-formatter](https://github.com/franlol/localcode-md-table-formatter/tree/main)    | Очистка таблиц Markdown, созданных LLM                                                                                                           |
+| [localcode-morph-plugin](https://github.com/morphllm/localcode-morph-plugin)                         | Редактирование Fast Apply, поиск по кодовой базе WarpGrep и сжатие контекста через Morph                                                         |
+| [oh-my-localcode](https://github.com/code-yeongyu/oh-my-localcode)                                   | Фоновые агенты, встроенные инструменты LSP/AST/MCP, курируемые агенты, совместимость с Claude Code                                               |
+| [localcode-notificator](https://github.com/panta82/localcode-notificator)                            | Уведомления на рабочем столе и звуковые оповещения для сеансов LocalCode                                                                          |
+| [localcode-notifier](https://github.com/mohak34/localcode-notifier)                                  | Уведомления на рабочем столе и звуковые оповещения о разрешениях, завершении и событиях ошибок                                                   |
+| [localcode-zellij-namer](https://github.com/24601/localcode-zellij-namer)                            | Автоматическое именование сеансов Zellij на основе искусственного интеллекта на основе контекста LocalCode                                        |
+| [localcode-skillful](https://github.com/zenobi-us/localcode-skillful)                                | Разрешить агентам LocalCode отложенную загрузку подсказок по требованию с обнаружением и внедрением навыков                                       |
+| [localcode-supermemory](https://github.com/supermemoryai/localcode-supermemory)                      | Постоянная память между сеансами с использованием Supermemory                                                                                    |
+| [@plannotator/localcode](https://github.com/backnotprop/plannotator/tree/main/apps/localcode-plugin) | Интерактивный обзор плана с визуальными аннотациями и возможностью совместного использования в частном или автономном режиме                     |
+| [@openspoon/subtask2](https://github.com/spoons-and-mirrors/subtask2)                              | Расширьте localcode/команды до мощной системы оркестровки с детальным управлением потоком данных                                                  |
+| [localcode-scheduler](https://github.com/different-ai/localcode-scheduler)                           | Планируйте повторяющиеся задания с помощью launchd (Mac) или systemd (Linux) с синтаксисом cron                                                  |
+| [micode](https://github.com/vtemian/micode)                                                        | Структурированный мозговой штурм → План → Реализация рабочего процесса с непрерывностью сеанса                                                   |
+| [octto](https://github.com/vtemian/octto)                                                          | Интерактивный пользовательский интерфейс браузера для мозгового штурма с помощью искусственного интеллекта с формами из нескольких вопросов      |
+| [localcode-background-agents](https://github.com/kdcokenny/localcode-background-agents)              | Фоновые агенты в стиле Claude Code с асинхронным делегированием и сохранением контекста                                                          |
+| [localcode-notify](https://github.com/kdcokenny/localcode-notify)                                    | Встроенные уведомления ОС для LocalCode – узнайте, когда задачи завершены                                                                         |
+| [localcode-workspace](https://github.com/kdcokenny/localcode-workspace)                              | Комплексный пакет многоагентной оркестровки — 16 компонентов, одна установка                                                                     |
+| [localcode-worktree](https://github.com/kdcokenny/localcode-worktree)                                | Рабочие деревья git с нулевым трением для LocalCode                                                                                               |
+| [localcode-sentry-monitor](https://github.com/stolinski/localcode-sentry-monitor)                    | Отслеживайте и отлаживайте ваших ИИ-агентов с помощью Sentry AI Monitoring                                                                       |
+
+---
+
+## Проекты
+
+| Имя                                                                                        | Описание                                                                                      |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [kimaki](https://github.com/remorses/kimaki)                                               | Discord-бот для управления сеансами LocalCode, созданный на базе SDK                           |
+| [localcode.nvim](https://github.com/NickvanDyke/localcode.nvim)                              | Плагин Neovim для подсказок с поддержкой редактора, созданный на основе API                   |
+| [portal](https://github.com/hosenur/portal)                                                | Мобильный веб-интерфейс для LocalCode через Tailscale/VPN                                      |
+| [localcode plugin template](https://github.com/zenobi-us/localcode-plugin-template/)         | Шаблон для создания плагинов LocalCode                                                         |
+| [localcode.nvim](https://github.com/sudo-tee/localcode.nvim)                                 | Интерфейс Neovim для LocalCode - агент кодирования искусственного интеллекта на базе терминала |
+| [ai-sdk-provider-localcode-sdk](https://github.com/ben-vargas/ai-sdk-provider-localcode-sdk) | Поставщик Vercel AI SDK для использования LocalCode через @localcode/sdk                     |
+| [OpenChamber](https://github.com/btriapitsyn/openchamber)                                  | Веб-приложение или настольное приложение и расширение VS Code для LocalCode                    |
+| [LocalCode-Obsidian](https://github.com/mtymek/localcode-obsidian)                           | Плагин Obsidian, встраивающий LocalCode в пользовательский интерфейс Obsidian                  |
+| [OpenWork](https://github.com/different-ai/openwork)                                       | Альтернатива Claude Cowork с открытым исходным кодом на базе LocalCode                         |
+| [ocx](https://github.com/kdcokenny/ocx)                                                    | Менеджер расширений LocalCode с переносимыми изолированными профилями                          |
+| [CodeNomad](https://github.com/NeuralNomadsAI/CodeNomad)                                   | Настольное, веб-, мобильное и удаленное клиентское приложение для LocalCode                    |
+
+---
+
+## Агенты
+
+| Имя                                                               | Описание                                                                  |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [Agentic](https://github.com/Cluster444/agentic)                  | Модульные ИИ-агенты и команды для структурированной разработки            |
+| [localcode-agents](https://github.com/darrenhinde/localcode-agents) | Конфигурации, подсказки, агенты и плагины для улучшения рабочих процессов |

@@ -1,0 +1,604 @@
+---
+title: CLI
+description: LocalCode CLI options and commands.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components"
+
+The LocalCode CLI by default starts the [TUI](/docs/tui) when run without any arguments.
+
+```bash
+localcode
+```
+
+But it also accepts commands as documented on this page. This allows you to interact with LocalCode programmatically.
+
+```bash
+localcode run "Explain how closures work in JavaScript"
+```
+
+---
+
+### tui
+
+Start the LocalCode terminal user interface.
+
+```bash
+localcode [project]
+```
+
+#### Flags
+
+| Flag         | Short | Description                                                             |
+| ------------ | ----- | ----------------------------------------------------------------------- |
+| `--continue` | `-c`  | Continue the last session                                               |
+| `--session`  | `-s`  | Session ID to continue                                                  |
+| `--fork`     |       | Fork the session when continuing (use with `--continue` or `--session`) |
+| `--prompt`   |       | Prompt to use                                                           |
+| `--model`    | `-m`  | Model to use in the form of provider/model                              |
+| `--agent`    |       | Agent to use                                                            |
+| `--port`     |       | Port to listen on                                                       |
+| `--hostname` |       | Hostname to listen on                                                   |
+
+---
+
+## Commands
+
+The LocalCode CLI also has the following commands.
+
+---
+
+### agent
+
+Manage agents for LocalCode.
+
+```bash
+localcode agent [command]
+```
+
+---
+
+### attach
+
+Attach a terminal to an already running LocalCode backend server started via `serve` or `web` commands.
+
+```bash
+localcode attach [url]
+```
+
+This allows using the TUI with a remote LocalCode backend. For example:
+
+```bash
+# Start the backend server for web/mobile access
+localcode web --port 4096 --hostname 0.0.0.0
+
+# In another terminal, attach the TUI to the running backend
+localcode attach http://10.20.30.40:4096
+```
+
+#### Flags
+
+| Flag        | Short | Description                       |
+| ----------- | ----- | --------------------------------- |
+| `--dir`     |       | Working directory to start TUI in |
+| `--session` | `-s`  | Session ID to continue            |
+
+---
+
+#### create
+
+Create a new agent with custom configuration.
+
+```bash
+localcode agent create
+```
+
+This command will guide you through creating a new agent with a custom system prompt and tool configuration.
+
+---
+
+#### list
+
+List all available agents.
+
+```bash
+localcode agent list
+```
+
+---
+
+### auth
+
+Command to manage credentials and login for providers.
+
+```bash
+localcode auth [command]
+```
+
+---
+
+#### login
+
+LocalCode is powered by the provider list at [Models.dev](https://models.dev), so you can use `localcode auth login` to configure API keys for any provider you'd like to use. This is stored in `~/.local/share/localcode/auth.json`.
+
+```bash
+localcode auth login
+```
+
+When LocalCode starts up it loads the providers from the credentials file. And if there are any keys defined in your environments or a `.env` file in your project.
+
+---
+
+#### list
+
+Lists all the authenticated providers as stored in the credentials file.
+
+```bash
+localcode auth list
+```
+
+Or the short version.
+
+```bash
+localcode auth ls
+```
+
+---
+
+#### logout
+
+Logs you out of a provider by clearing it from the credentials file.
+
+```bash
+localcode auth logout
+```
+
+---
+
+### github
+
+Manage the GitHub agent for repository automation.
+
+```bash
+localcode github [command]
+```
+
+---
+
+#### install
+
+Install the GitHub agent in your repository.
+
+```bash
+localcode github install
+```
+
+This sets up the necessary GitHub Actions workflow and guides you through the configuration process. [Learn more](/docs/github).
+
+---
+
+#### run
+
+Run the GitHub agent. This is typically used in GitHub Actions.
+
+```bash
+localcode github run
+```
+
+##### Flags
+
+| Flag      | Description                            |
+| --------- | -------------------------------------- |
+| `--event` | GitHub mock event to run the agent for |
+| `--token` | GitHub personal access token           |
+
+---
+
+### mcp
+
+Manage Model Context Protocol servers.
+
+```bash
+localcode mcp [command]
+```
+
+---
+
+#### add
+
+Add an MCP server to your configuration.
+
+```bash
+localcode mcp add
+```
+
+This command will guide you through adding either a local or remote MCP server.
+
+---
+
+#### list
+
+List all configured MCP servers and their connection status.
+
+```bash
+localcode mcp list
+```
+
+Or use the short version.
+
+```bash
+localcode mcp ls
+```
+
+---
+
+#### auth
+
+Authenticate with an OAuth-enabled MCP server.
+
+```bash
+localcode mcp auth [name]
+```
+
+If you don't provide a server name, you'll be prompted to select from available OAuth-capable servers.
+
+You can also list OAuth-capable servers and their authentication status.
+
+```bash
+localcode mcp auth list
+```
+
+Or use the short version.
+
+```bash
+localcode mcp auth ls
+```
+
+---
+
+#### logout
+
+Remove OAuth credentials for an MCP server.
+
+```bash
+localcode mcp logout [name]
+```
+
+---
+
+#### debug
+
+Debug OAuth connection issues for an MCP server.
+
+```bash
+localcode mcp debug <name>
+```
+
+---
+
+### models
+
+List all available models from configured providers.
+
+```bash
+localcode models [provider]
+```
+
+This command displays all models available across your configured providers in the format `provider/model`.
+
+This is useful for figuring out the exact model name to use in [your config](/docs/config/).
+
+You can optionally pass a provider ID to filter models by that provider.
+
+```bash
+localcode models anthropic
+```
+
+#### Flags
+
+| Flag        | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| `--refresh` | Refresh the models cache from models.dev                     |
+| `--verbose` | Use more verbose model output (includes metadata like costs) |
+
+Use the `--refresh` flag to update the cached model list. This is useful when new models have been added to a provider and you want to see them in LocalCode.
+
+```bash
+localcode models --refresh
+```
+
+---
+
+### run
+
+Run localcode in non-interactive mode by passing a prompt directly.
+
+```bash
+localcode run [message..]
+```
+
+This is useful for scripting, automation, or when you want a quick answer without launching the full TUI. For example.
+
+```bash "localcode run"
+localcode run Explain the use of context in Go
+```
+
+You can also attach to a running `localcode serve` instance to avoid MCP server cold boot times on every run:
+
+```bash
+# Start a headless server in one terminal
+localcode serve
+
+# In another terminal, run commands that attach to it
+localcode run --attach http://localhost:4096 "Explain async/await in JavaScript"
+```
+
+#### Flags
+
+| Flag         | Short | Description                                                             |
+| ------------ | ----- | ----------------------------------------------------------------------- |
+| `--command`  |       | The command to run, use message for args                                |
+| `--continue` | `-c`  | Continue the last session                                               |
+| `--session`  | `-s`  | Session ID to continue                                                  |
+| `--fork`     |       | Fork the session when continuing (use with `--continue` or `--session`) |
+| `--share`    |       | Share the session                                                       |
+| `--model`    | `-m`  | Model to use in the form of provider/model                              |
+| `--agent`    |       | Agent to use                                                            |
+| `--file`     | `-f`  | File(s) to attach to message                                            |
+| `--format`   |       | Format: default (formatted) or json (raw JSON events)                   |
+| `--title`    |       | Title for the session (uses truncated prompt if no value provided)      |
+| `--attach`   |       | Attach to a running localcode server (e.g., http://localhost:4096)       |
+| `--port`     |       | Port for the local server (defaults to random port)                     |
+
+---
+
+### serve
+
+Start a headless LocalCode server for API access. Check out the [server docs](/docs/server) for the full HTTP interface.
+
+```bash
+localcode serve
+```
+
+This starts an HTTP server that provides API access to localcode functionality without the TUI interface. Set `LOCALCODE_SERVER_PASSWORD` to enable HTTP basic auth (username defaults to `localcode`).
+
+#### Flags
+
+| Flag         | Description                                |
+| ------------ | ------------------------------------------ |
+| `--port`     | Port to listen on                          |
+| `--hostname` | Hostname to listen on                      |
+| `--mdns`     | Enable mDNS discovery                      |
+| `--cors`     | Additional browser origin(s) to allow CORS |
+
+---
+
+### session
+
+Manage LocalCode sessions.
+
+```bash
+localcode session [command]
+```
+
+---
+
+#### list
+
+List all LocalCode sessions.
+
+```bash
+localcode session list
+```
+
+##### Flags
+
+| Flag          | Short | Description                          |
+| ------------- | ----- | ------------------------------------ |
+| `--max-count` | `-n`  | Limit to N most recent sessions      |
+| `--format`    |       | Output format: table or json (table) |
+
+---
+
+### stats
+
+Show token usage and cost statistics for your LocalCode sessions.
+
+```bash
+localcode stats
+```
+
+#### Flags
+
+| Flag        | Description                                                                 |
+| ----------- | --------------------------------------------------------------------------- |
+| `--days`    | Show stats for the last N days (all time)                                   |
+| `--tools`   | Number of tools to show (all)                                               |
+| `--models`  | Show model usage breakdown (hidden by default). Pass a number to show top N |
+| `--project` | Filter by project (all projects, empty string: current project)             |
+
+---
+
+### export
+
+Export session data as JSON.
+
+```bash
+localcode export [sessionID]
+```
+
+If you don't provide a session ID, you'll be prompted to select from available sessions.
+
+---
+
+### import
+
+Import session data from a JSON file or LocalCode share URL.
+
+```bash
+localcode import <file>
+```
+
+You can import from a local file or an LocalCode share URL.
+
+```bash
+localcode import session.json
+localcode import https://opncd.ai/s/abc123
+```
+
+---
+
+### web
+
+Start a headless LocalCode server with a web interface.
+
+```bash
+localcode web
+```
+
+This starts an HTTP server and opens a web browser to access LocalCode through a web interface. Set `LOCALCODE_SERVER_PASSWORD` to enable HTTP basic auth (username defaults to `localcode`).
+
+#### Flags
+
+| Flag         | Description                                |
+| ------------ | ------------------------------------------ |
+| `--port`     | Port to listen on                          |
+| `--hostname` | Hostname to listen on                      |
+| `--mdns`     | Enable mDNS discovery                      |
+| `--cors`     | Additional browser origin(s) to allow CORS |
+
+---
+
+### acp
+
+Start an ACP (Agent Client Protocol) server.
+
+```bash
+localcode acp
+```
+
+This command starts an ACP server that communicates via stdin/stdout using nd-JSON.
+
+#### Flags
+
+| Flag         | Description           |
+| ------------ | --------------------- |
+| `--cwd`      | Working directory     |
+| `--port`     | Port to listen on     |
+| `--hostname` | Hostname to listen on |
+
+---
+
+### uninstall
+
+Uninstall LocalCode and remove all related files.
+
+```bash
+localcode uninstall
+```
+
+#### Flags
+
+| Flag            | Short | Description                                 |
+| --------------- | ----- | ------------------------------------------- |
+| `--keep-config` | `-c`  | Keep configuration files                    |
+| `--keep-data`   | `-d`  | Keep session data and snapshots             |
+| `--dry-run`     |       | Show what would be removed without removing |
+| `--force`       | `-f`  | Skip confirmation prompts                   |
+
+---
+
+### upgrade
+
+Updates localcode to the latest version or a specific version.
+
+```bash
+localcode upgrade [target]
+```
+
+To upgrade to the latest version.
+
+```bash
+localcode upgrade
+```
+
+To upgrade to a specific version.
+
+```bash
+localcode upgrade v0.1.48
+```
+
+#### Flags
+
+| Flag       | Short | Description                                                       |
+| ---------- | ----- | ----------------------------------------------------------------- |
+| `--method` | `-m`  | The installation method that was used; curl, npm, pnpm, bun, brew |
+
+---
+
+## Global Flags
+
+The localcode CLI takes the following global flags.
+
+| Flag           | Short | Description                          |
+| -------------- | ----- | ------------------------------------ |
+| `--help`       | `-h`  | Display help                         |
+| `--version`    | `-v`  | Print version number                 |
+| `--print-logs` |       | Print logs to stderr                 |
+| `--log-level`  |       | Log level (DEBUG, INFO, WARN, ERROR) |
+
+---
+
+## Environment variables
+
+LocalCode can be configured using environment variables.
+
+| Variable                              | Type    | Description                                       |
+| ------------------------------------- | ------- | ------------------------------------------------- |
+| `LOCALCODE_AUTO_SHARE`                 | boolean | Automatically share sessions                      |
+| `LOCALCODE_GIT_BASH_PATH`              | string  | Path to Git Bash executable on Windows            |
+| `LOCALCODE_CONFIG`                     | string  | Path to config file                               |
+| `LOCALCODE_TUI_CONFIG`                 | string  | Path to TUI config file                           |
+| `LOCALCODE_CONFIG_DIR`                 | string  | Path to config directory                          |
+| `LOCALCODE_CONFIG_CONTENT`             | string  | Inline json config content                        |
+| `LOCALCODE_DISABLE_AUTOUPDATE`         | boolean | Disable automatic update checks                   |
+| `LOCALCODE_DISABLE_PRUNE`              | boolean | Disable pruning of old data                       |
+| `LOCALCODE_DISABLE_TERMINAL_TITLE`     | boolean | Disable automatic terminal title updates          |
+| `LOCALCODE_PERMISSION`                 | string  | Inlined json permissions config                   |
+| `LOCALCODE_DISABLE_DEFAULT_PLUGINS`    | boolean | Disable default plugins                           |
+| `LOCALCODE_DISABLE_LSP_DOWNLOAD`       | boolean | Disable automatic LSP server downloads            |
+| `LOCALCODE_ENABLE_EXPERIMENTAL_MODELS` | boolean | Enable experimental models                        |
+| `LOCALCODE_DISABLE_AUTOCOMPACT`        | boolean | Disable automatic context compaction              |
+| `LOCALCODE_DISABLE_CLAUDE_CODE`        | boolean | Disable reading from `.claude` (prompt + skills)  |
+| `LOCALCODE_DISABLE_CLAUDE_CODE_PROMPT` | boolean | Disable reading `~/.claude/CLAUDE.md`             |
+| `LOCALCODE_DISABLE_CLAUDE_CODE_SKILLS` | boolean | Disable loading `.claude/skills`                  |
+| `LOCALCODE_DISABLE_MODELS_FETCH`       | boolean | Disable fetching models from remote sources       |
+| `LOCALCODE_FAKE_VCS`                   | string  | Fake VCS provider for testing purposes            |
+| `LOCALCODE_DISABLE_FILETIME_CHECK`     | boolean | Disable file time checking for optimization       |
+| `LOCALCODE_CLIENT`                     | string  | Client identifier (defaults to `cli`)             |
+| `LOCALCODE_ENABLE_EXA`                 | boolean | Enable Exa web search tools                       |
+| `LOCALCODE_SERVER_PASSWORD`            | string  | Enable basic auth for `serve`/`web`               |
+| `LOCALCODE_SERVER_USERNAME`            | string  | Override basic auth username (default `localcode`) |
+| `LOCALCODE_MODELS_URL`                 | string  | Custom URL for fetching models configuration      |
+
+---
+
+### Experimental
+
+These environment variables enable experimental features that may change or be removed.
+
+| Variable                                        | Type    | Description                             |
+| ----------------------------------------------- | ------- | --------------------------------------- |
+| `LOCALCODE_EXPERIMENTAL`                         | boolean | Enable all experimental features        |
+| `LOCALCODE_EXPERIMENTAL_ICON_DISCOVERY`          | boolean | Enable icon discovery                   |
+| `LOCALCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | boolean | Disable copy on select in TUI           |
+| `LOCALCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | number  | Default timeout for bash commands in ms |
+| `LOCALCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | number  | Max output tokens for LLM responses     |
+| `LOCALCODE_EXPERIMENTAL_FILEWATCHER`             | boolean | Enable file watcher for entire dir      |
+| `LOCALCODE_EXPERIMENTAL_OXFMT`                   | boolean | Enable oxfmt formatter                  |
+| `LOCALCODE_EXPERIMENTAL_LSP_TOOL`                | boolean | Enable experimental LSP tool            |
+| `LOCALCODE_EXPERIMENTAL_DISABLE_FILEWATCHER`     | boolean | Disable file watcher                    |
+| `LOCALCODE_EXPERIMENTAL_EXA`                     | boolean | Enable experimental Exa features        |
+| `LOCALCODE_EXPERIMENTAL_LSP_TY`                  | boolean | Enable TY LSP for python files          |
+| `LOCALCODE_EXPERIMENTAL_MARKDOWN`                | boolean | Enable experimental markdown features   |
+| `LOCALCODE_EXPERIMENTAL_PLAN_MODE`               | boolean | Enable plan mode                        |

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://localcode.dev/config.json",
+  "provider": {
+    "localcode": {
+      "options": {},
+    },
+  },
+  "permission": {
+    "edit": {
+      "packages/localcode/migration/*": "deny",
+    },
+  },
+  "mcp": {},
+  "tools": {
+    "github-triage": false,
+    "github-pr-search": false,
+  },
+}
