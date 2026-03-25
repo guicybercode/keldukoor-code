@@ -26,14 +26,6 @@ type ModelInfo = {
 export const ModelTooltip: Component<{ model: ModelInfo; latest?: boolean; free?: boolean }> = (props) => {
   const language = useLanguage()
   const sourceName = (model: ModelInfo) => {
-    const value = `${model.id} ${model.name}`.toLowerCase()
-
-    if (/claude|anthropic/.test(value)) return language.t("model.provider.anthropic")
-    if (/gpt|o[1-4]|codex|openai/.test(value)) return language.t("model.provider.openai")
-    if (/gemini|palm|bard|google/.test(value)) return language.t("model.provider.google")
-    if (/grok|xai/.test(value)) return language.t("model.provider.xai")
-    if (/llama|meta/.test(value)) return language.t("model.provider.meta")
-
     return model.provider.name
   }
   const inputLabel = (value: string) => {

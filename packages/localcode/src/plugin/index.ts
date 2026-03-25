@@ -43,7 +43,7 @@ export namespace Plugin {
   const INTERNAL_PLUGINS: PluginInstance[] = []
 
   // Old npm package names for plugins that are now built-in — skip if users still have them in config
-  const DEPRECATED_PLUGIN_PACKAGES = ["localcode-openai-codex-auth", "localcode-copilot-auth"]
+  const DEPRECATED_PLUGIN_PACKAGES: string[] = []
 
   export const layer = Layer.effect(
     Service,
