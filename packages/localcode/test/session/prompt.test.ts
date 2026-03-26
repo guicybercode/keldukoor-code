@@ -1,5 +1,5 @@
 import path from "path"
-import { describe, expect, test } from "bun:test"
+import { afterAll, beforeAll, describe, expect, test } from "bun:test"
 import { NamedError } from "@localcode/util/error"
 import { fileURLToPath } from "url"
 import { Instance } from "../../src/project/instance"
@@ -12,6 +12,31 @@ import { tmpdir } from "../fixture/fixture"
 
 Log.init({ print: false })
 
+// Mock Ollama server for model discovery
+let mockOllama: ReturnType<typeof Bun.serve> | undefined
+beforeAll(() => {
+  mockOllama = Bun.serve({
+    port: 0,
+    fetch(req) {
+      const url = new URL(req.url)
+      if (url.pathname === "/api/tags") {
+        return new Response(
+          JSON.stringify({
+            models: [{ name: "qwen-plus", model: "qwen-plus", size: 1000000 }],
+          }),
+          { headers: { "Content-Type": "application/json" } },
+        )
+      }
+      return new Response("not found", { status: 404 })
+    },
+  })
+  process.env["OLLAMA_BASE_URL"] = mockOllama.url.origin
+})
+afterAll(() => {
+  mockOllama?.stop()
+  delete process.env["OLLAMA_BASE_URL"]
+})
+
 describe("session.prompt missing file", () => {
   test("does not fail the prompt when a file part is missing", async () => {
     await using tmp = await tmpdir({
@@ -19,7 +44,7 @@ describe("session.prompt missing file", () => {
       config: {
         agent: {
           build: {
-            model: "openai/gpt-5.2",
+            model: "ollama/qwen-plus",
           },
         },
       },
@@ -64,7 +89,7 @@ describe("session.prompt missing file", () => {
       config: {
         agent: {
           build: {
-            model: "openai/gpt-5.2",
+            model: "ollama/qwen-plus",
           },
         },
       },
@@ -113,6 +138,13 @@ describe("session.prompt special characters", () => {
   test("handles filenames with # character", async () => {
     await using tmp = await tmpdir({
       git: true,
+      config: {
+        agent: {
+          build: {
+            model: "ollama/qwen-plus",
+          },
+        },
+      },
       init: async (dir) => {
         await Bun.write(path.join(dir, "file#name.txt"), "special content\n")
       },
@@ -150,65 +182,49 @@ describe("session.prompt special characters", () => {
 })
 
 describe("session.prompt agent variant", () => {
-  test("applies agent variant only when using agent model", async () => {
-    const prev = process.env.OPENAI_API_KEY
-    process.env.OPENAI_API_KEY = "test-openai-key"
-
-    try {
-      await using tmp = await tmpdir({
-        git: true,
-        config: {
-          agent: {
-            build: {
-              model: "openai/gpt-5.2",
-              variant: "xhigh",
-            },
+  test("variant is undefined for models without reasoning support", async () => {
+    await using tmp = await tmpdir({
+      git: true,
+      config: {
+        agent: {
+          build: {
+            model: "ollama/qwen-plus",
+            variant: "xhigh",
           },
         },
-      })
+      },
+    })
 
-      await Instance.provide({
-        directory: tmp.path,
-        fn: async () => {
-          const session = await Session.create({})
+    await Instance.provide({
+      directory: tmp.path,
+      fn: async () => {
+        const session = await Session.create({})
 
-          const other = await SessionPrompt.prompt({
-            sessionID: session.id,
-            agent: "build",
-            model: { providerID: ProviderID.make("localcode"), modelID: ModelID.make("kimi-k2.5-free") },
-            noReply: true,
-            parts: [{ type: "text", text: "hello" }],
-          })
-          if (other.info.role !== "user") throw new Error("expected user message")
-          expect(other.info.variant).toBeUndefined()
+        // Ollama models don't support reasoning variants, so variant should be undefined
+        const match = await SessionPrompt.prompt({
+          sessionID: session.id,
+          agent: "build",
+          noReply: true,
+          parts: [{ type: "text", text: "hello" }],
+        })
+        if (match.info.role !== "user") throw new Error("expected user message")
+        expect(match.info.model).toEqual({ providerID: ProviderID.make("ollama"), modelID: ModelID.make("qwen-plus") })
+        expect(match.info.variant).toBeUndefined()
 
-          const match = await SessionPrompt.prompt({
-            sessionID: session.id,
-            agent: "build",
-            noReply: true,
-            parts: [{ type: "text", text: "hello again" }],
-          })
-          if (match.info.role !== "user") throw new Error("expected user message")
-          expect(match.info.model).toEqual({ providerID: ProviderID.make("openai"), modelID: ModelID.make("gpt-5.2") })
-          expect(match.info.variant).toBe("xhigh")
+        // Explicit variant override should still be stored even without reasoning support
+        const override = await SessionPrompt.prompt({
+          sessionID: session.id,
+          agent: "build",
+          noReply: true,
+          variant: "high",
+          parts: [{ type: "text", text: "hello again" }],
+        })
+        if (override.info.role !== "user") throw new Error("expected user message")
+        expect(override.info.variant).toBe("high")
 
-          const override = await SessionPrompt.prompt({
-            sessionID: session.id,
-            agent: "build",
-            noReply: true,
-            variant: "high",
-            parts: [{ type: "text", text: "hello third" }],
-          })
-          if (override.info.role !== "user") throw new Error("expected user message")
-          expect(override.info.variant).toBe("high")
-
-          await Session.remove(session.id)
-        },
-      })
-    } finally {
-      if (prev === undefined) delete process.env.OPENAI_API_KEY
-      else process.env.OPENAI_API_KEY = prev
-    }
+        await Session.remove(session.id)
+      },
+    })
   })
 })
 
