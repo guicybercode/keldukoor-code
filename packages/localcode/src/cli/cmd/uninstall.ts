@@ -53,7 +53,7 @@ export const UninstallCommand = {
 
   handler: async (args: UninstallArgs) => {
     UI.empty()
-    UI.println(UI.logo("  "))
+    UI.println("")
     UI.empty()
     prompts.intro("Uninstall LocalCode")
 

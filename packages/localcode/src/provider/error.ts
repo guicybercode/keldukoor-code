@@ -4,42 +4,21 @@ import { iife } from "@/util/iife"
 import type { ProviderID } from "./schema"
 
 export namespace ProviderError {
-  // Adapted from overflow detection patterns in:
-  // https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/utils/overflow.ts
+  // Context overflow detection patterns — kept generic for Ollama and compatible backends
   const OVERFLOW_PATTERNS = [
-    /prompt is too long/i, // Anthropic
-    /input is too long for requested model/i, // Amazon Bedrock
-    /exceeds the context window/i, // OpenAI (Completions + Responses API message text)
-    /input token count.*exceeds the maximum/i, // Google (Gemini)
-    /maximum prompt length is \d+/i, // xAI (Grok)
-    /reduce the length of the messages/i, // Groq
-    /maximum context length is \d+ tokens/i, // OpenRouter, DeepSeek, vLLM
-    /exceeds the limit of \d+/i, // GitHub Copilot
-    /exceeds the available context size/i, // llama.cpp server
-    /greater than the context length/i, // LM Studio
-    /context window exceeds limit/i, // MiniMax
-    /exceeded model token limit/i, // Kimi For Coding, Moonshot
     /context[_ ]length[_ ]exceeded/i, // Generic fallback
+    /maximum context length is \d+ tokens/i, // Common in OpenAI-compatible APIs
     /request entity too large/i, // HTTP 413
     /context length is only \d+ tokens/i, // vLLM
     /input length.*exceeds.*context length/i, // vLLM
+    /exceeds the available context size/i, // llama.cpp server
+    /greater than the context length/i, // LM Studio
   ]
 
-  function isOpenAiErrorRetryable(e: APICallError) {
-    const status = e.statusCode
-    if (!status) return e.isRetryable
-    // openai sometimes returns 404 for models that are actually available
-    return status === 404 || e.isRetryable
-  }
-
-  // Providers not reliably handled in this function:
-  // - z.ai: can accept overflow silently (needs token-count/context-window checks)
   function isOverflow(message: string) {
     if (OVERFLOW_PATTERNS.some((p) => p.test(message))) return true
 
-    // Providers/status patterns handled outside of regex list:
-    // - Cerebras: often returns "400 (no body)" / "413 (no body)"
-    // - Mistral: often returns "400 (no body)" / "413 (no body)"
+    // Some backends return "400 (no body)" or "413 (no body)" for overflow
     return /^4(00|13)\s*(status code)?\s*\(no body\)/i.test(message)
   }
 
@@ -127,20 +106,6 @@ export namespace ProviderError {
           message: "Input exceeds context window of this model",
           responseBody,
         }
-      case "insufficient_quota":
-        return {
-          type: "api_error",
-          message: "Quota exceeded. Check your plan and billing details.",
-          isRetryable: false,
-          responseBody,
-        }
-      case "usage_not_included":
-        return {
-          type: "api_error",
-          message: "To use Codex with your ChatGPT plan, upgrade to Plus: https://chatgpt.com/explore/plus.",
-          isRetryable: false,
-          responseBody,
-        }
       case "invalid_prompt":
         return {
           type: "api_error",
@@ -183,9 +148,7 @@ export namespace ProviderError {
       type: "api_error",
       message: m,
       statusCode: input.error.statusCode,
-      isRetryable: input.providerID.startsWith("openai")
-        ? isOpenAiErrorRetryable(input.error)
-        : input.error.isRetryable,
+      isRetryable: input.error.isRetryable,
       responseHeaders: input.error.responseHeaders,
       responseBody: input.error.responseBody,
       metadata,

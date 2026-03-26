@@ -14,7 +14,7 @@ const model: Provider.Model = {
   api: {
     id: "test-model",
     url: "https://example.com",
-    npm: "@ai-sdk/openai",
+    npm: "@ai-sdk/openai-compatible",
   },
   name: "Test Model",
   capabilities: {
@@ -319,44 +319,47 @@ describe("session.message-v2.toModelMessage", () => {
       },
     ]
 
-    expect(MessageV2.toModelMessages(input, model)).toStrictEqual([
-      {
-        role: "user",
-        content: [{ type: "text", text: "run tool" }],
-      },
-      {
-        role: "assistant",
-        content: [
-          { type: "text", text: "done", providerOptions: { openai: { assistant: "meta" } } },
-          {
-            type: "tool-call",
-            toolCallId: "call-1",
-            toolName: "bash",
-            input: { cmd: "ls" },
-            providerExecuted: undefined,
-            providerOptions: { openai: { tool: "meta" } },
-          },
-        ],
-      },
-      {
-        role: "tool",
-        content: [
-          {
-            type: "tool-result",
-            toolCallId: "call-1",
-            toolName: "bash",
-            output: {
-              type: "content",
-              value: [
-                { type: "text", text: "ok" },
-                { type: "media", mediaType: "image/png", data: "Zm9v" },
-              ],
-            },
-            providerOptions: { openai: { tool: "meta" } },
-          },
-        ],
-      },
-    ])
+    const result = MessageV2.toModelMessages(input, model)
+    // With supportsMediaInToolResults=false (Ollama/openai-compatible), media is extracted
+    // from tool results and injected as a separate user message
+    expect(result[0]).toStrictEqual({
+      role: "user",
+      content: [{ type: "text", text: "run tool" }],
+    })
+    expect(result[1]).toStrictEqual({
+      role: "assistant",
+      content: [
+        { type: "text", text: "done", providerOptions: { openai: { assistant: "meta" } } },
+        {
+          type: "tool-call",
+          toolCallId: "call-1",
+          toolName: "bash",
+          input: { cmd: "ls" },
+          providerExecuted: undefined,
+          providerOptions: { openai: { tool: "meta" } },
+        },
+      ],
+    })
+    expect(result[2]).toStrictEqual({
+      role: "tool",
+      content: [
+        {
+          type: "tool-result",
+          toolCallId: "call-1",
+          toolName: "bash",
+          output: { type: "text", value: "ok" },
+          providerOptions: { openai: { tool: "meta" } },
+        },
+      ],
+    })
+    // Media extracted to a user message since openai-compatible doesn't support media in tool results
+    expect(result[3]).toStrictEqual({
+      role: "user",
+      content: [
+        { type: "text", text: "Attached image(s) from tool result:" },
+        { type: "file", data: "data:image/png;base64,Zm9v", mediaType: "image/png", filename: undefined },
+      ],
+    })
   })
 
   test("omits provider metadata when assistant model differs", () => {
@@ -809,49 +812,31 @@ describe("session.message-v2.fromError", () => {
     })
   })
 
-  test("serializes response error codes", () => {
-    const cases = [
-      {
-        code: "insufficient_quota",
-        message: "Quota exceeded. Check your plan and billing details.",
-      },
-      {
-        code: "usage_not_included",
-        message: "To use Codex with your ChatGPT plan, upgrade to Plus: https://chatgpt.com/explore/plus.",
-      },
-      {
+  test("serializes invalid_prompt error code", () => {
+    const input = {
+      type: "error",
+      error: {
         code: "invalid_prompt",
         message: "Invalid prompt from test",
       },
-    ]
+    }
+    const result = MessageV2.fromError(input, { providerID })
 
-    cases.forEach((item) => {
-      const input = {
-        type: "error",
-        error: {
-          code: item.code,
-          message: item.code === "invalid_prompt" ? item.message : undefined,
-        },
-      }
-      const result = MessageV2.fromError(input, { providerID })
-
-      expect(result).toStrictEqual({
-        name: "APIError",
-        data: {
-          message: item.message,
-          isRetryable: false,
-          responseBody: JSON.stringify(input),
-        },
-      })
+    expect(result).toStrictEqual({
+      name: "APIError",
+      data: {
+        message: "Invalid prompt from test",
+        isRetryable: false,
+        responseBody: JSON.stringify(input),
+      },
     })
   })
 
   test("detects context overflow from APICallError provider messages", () => {
     const cases = [
-      "prompt is too long: 213462 tokens > 200000 maximum",
-      "Your input exceeds the context window of this model",
-      "The input token count (1196265) exceeds the maximum number of tokens allowed (1048575)",
-      "Please reduce the length of the messages or completion",
+      "context length exceeded: 213462 tokens > 200000 maximum",
+      "maximum context length is 32768 tokens",
+      "request entity too large",
       "400 status code (no body)",
       "413 status code (no body)",
     ]

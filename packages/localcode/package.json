@@ -78,7 +78,6 @@
     "@modelcontextprotocol/sdk": "1.27.1",
     "@octokit/graphql": "9.0.2",
     "@octokit/rest": "catalog:",
-    "@openauthjs/openauth": "catalog:",
     "@localcode/plugin": "workspace:*",
     "@localcode/script": "workspace:*",
     "@localcode/sdk": "workspace:*",

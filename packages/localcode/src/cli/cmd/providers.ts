@@ -311,12 +311,7 @@ export const ProvidersLoginCommand = cmd({
 
         const priority: Record<string, number> = {
           localcode: 0,
-          openai: 1,
-          "github-copilot": 2,
-          google: 3,
-          anthropic: 4,
-          openrouter: 5,
-          vercel: 6,
+          ollama: 1,
         }
         const pluginProviders = resolvePluginProviders({
           hooks: await Plugin.list(),
@@ -337,8 +332,7 @@ export const ProvidersLoginCommand = cmd({
               label: x.name,
               value: x.id,
               hint: {
-                localcode: "recommended",
-                openai: "ChatGPT Plus/Pro or API key",
+                ollama: "local",
               }[x.id],
             })),
           ),
@@ -401,28 +395,8 @@ export const ProvidersLoginCommand = cmd({
           )
         }
 
-        if (provider === "amazon-bedrock") {
-          prompts.log.info(
-            "Amazon Bedrock authentication priority:\n" +
-              "  1. Bearer token (AWS_BEARER_TOKEN_BEDROCK or /connect)\n" +
-              "  2. AWS credential chain (profile, access keys, IAM roles, EKS IRSA)\n\n" +
-              "Configure via localcode.json options (profile, region, endpoint) or\n" +
-              "AWS environment variables (AWS_PROFILE, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_WEB_IDENTITY_TOKEN_FILE).",
-          )
-        }
-
         if (provider === "localcode") {
           prompts.log.info("Create an api key at https://localcode.dev/auth")
-        }
-
-        if (provider === "vercel") {
-          prompts.log.info("You can create an api key at https://vercel.link/ai-gateway-token")
-        }
-
-        if (["cloudflare", "cloudflare-ai-gateway"].includes(provider)) {
-          prompts.log.info(
-            "Cloudflare AI Gateway can be configured with CLOUDFLARE_GATEWAY_ID, CLOUDFLARE_ACCOUNT_ID, and CLOUDFLARE_API_TOKEN environment variables. Read more: https://localcode.dev/docs/providers/#cloudflare-ai-gateway",
-          )
         }
 
         const key = await prompts.password({
