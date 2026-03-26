@@ -29,7 +29,7 @@ import { Locale } from "@/util/locale"
 import { formatDuration } from "@/util/format"
 import { createColors, createFrames } from "../../ui/spinner.ts"
 import { useDialog } from "@tui/ui/dialog"
-import { DialogProvider as DialogProviderConnect } from "../dialog-provider"
+
 import { DialogAlert } from "../../ui/dialog-alert"
 import { useToast } from "../../ui/toast"
 import { useKV } from "../../context/kv"
@@ -79,17 +79,6 @@ export function Prompt(props: PromptProps) {
   const renderer = useRenderer()
   const { theme, syntax } = useTheme()
   const kv = useKV()
-
-  function promptModelWarning() {
-    toast.show({
-      variant: "warning",
-      message: "Connect a provider to send prompts",
-      duration: 3000,
-    })
-    if (sync.data.provider.length === 0) {
-      dialog.replace(() => <DialogProviderConnect />)
-    }
-  }
 
   const textareaKeybindings = useTextareaKeybindings()
 
@@ -537,10 +526,7 @@ export function Prompt(props: PromptProps) {
       return
     }
     const selectedModel = local.model.current()
-    if (!selectedModel) {
-      promptModelWarning()
-      return
-    }
+    if (!selectedModel) return
 
     let sessionID = props.sessionID
     if (sessionID == null) {
