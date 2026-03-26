@@ -225,6 +225,9 @@ function resolveTheme(theme: ThemeJson, mode: "dark" | "light") {
   // Handle thinkingOpacity - optional with default of 0.6
   const thinkingOpacity = theme.theme.thinkingOpacity ?? 0.6
 
+  // Force transparent background so the terminal's native background shows through
+  resolved.background = RGBA.fromInts(0, 0, 0, 0)
+
   return {
     ...resolved,
     _hasSelectedListItemText: hasSelectedListItemText,
@@ -386,7 +389,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
     })
 
     createEffect(() => {
-      renderer.setBackgroundColor(values().background)
+      renderer.setBackgroundColor(RGBA.fromInts(0, 0, 0, 0))
     })
 
     const syntax = createMemo(() => generateSyntax(values()))
