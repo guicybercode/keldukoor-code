@@ -1,36 +1,38 @@
+> *"너희가 내 안에 거하고 내 말이 너희 안에 거하면 무엇이든지 원하는 대로 구하라 그리하면 이루리라"* — 요한복음 15:7
+
 # localcode
 
-AI coding agent that runs local LLM models via [Ollama](https://ollama.com).
+通过 [Ollama](https://ollama.com) 运行本地大语言模型的 AI 编程助手。
 
-## Prerequisites
+## 前提条件
 
 - [Bun](https://bun.sh) 1.3+
-- [Ollama](https://ollama.com) installed and running
+- [Ollama](https://ollama.com) 已安装并运行
 
-## Setup
+## 安装
 
-1. Install dependencies:
+1. 安装依赖：
 
 ```bash
 bun install
 ```
 
-2. Pull a model:
+2. 拉取模型：
 
 ```bash
 ollama pull qwen2.5-coder:7b
 ```
 
-3. Run:
+3. 运行：
 
 ```bash
 cd packages/localcode
 bun dev
 ```
 
-## Configuration
+## 配置
 
-Create a `localcode.json` in your project root:
+在项目根目录创建 `localcode.json`：
 
 ```json
 {
@@ -42,36 +44,34 @@ Create a `localcode.json` in your project root:
 }
 ```
 
-### Environment Variables
+### 环境变量
 
-- `OLLAMA_BASE_URL` - Ollama API URL (default: `http://localhost:11434`)
-- `LOCALCODE_CONFIG` - Path to custom config file
+- `OLLAMA_BASE_URL` - Ollama API 地址（默认：`http://localhost:11434`）
+- `LOCALCODE_CONFIG` - 自定义配置文件路径
 
-## How It Works
+## 工作原理
 
-localcode auto-discovers models from your local Ollama instance and provides a terminal-based AI coding agent with:
+localcode 自动发现本地 Ollama 实例中的模型，并提供基于终端的 AI 编程助手，支持：
 
-- Full file read/write/edit capabilities
-- Shell command execution
-- LSP integration
-- MCP (Model Context Protocol) support
-- Git integration
+- 完整的文件读取/写入/编辑功能
+- Shell 命令执行
+- LSP 集成
+- MCP（模型上下文协议）支持
+- Git 集成
 
-## Project Structure
+## 项目结构
 
 ```
 packages/
-  localcode/     # Core CLI & agent
-  app/           # Shared UI components
-  ui/            # Design system
-  desktop/       # Desktop app (Tauri)
-  console/       # Web dashboard
+  localcode/     # 核心 CLI 和代理
+  app/           # 共享 UI 组件
+  ui/            # 设计系统
+  desktop/       # 桌面应用（Tauri）
+  console/       # Web 控制台
   sdk/           # TypeScript SDK
-  plugin/        # Plugin system
+  plugin/        # 插件系统
 ```
 
-## License
-
-MIT
+---
 
 made by guicybercode 謝謝你們 >,<
