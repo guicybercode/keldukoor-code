@@ -109,6 +109,9 @@ export function Home() {
       <box flexGrow={1} alignItems="center" paddingLeft={2} paddingRight={2}>
         <box flexGrow={1} minHeight={0} />
         <box height={4} minHeight={0} flexShrink={1} />
+        <box width="100%" maxWidth={75} alignItems="center" paddingBottom={1} flexShrink={0}>
+          <text fg={theme.textMuted}><span style={{ bold: true }}>localcode</span></text>
+        </box>
         <box width="100%" maxWidth={75} zIndex={1000} paddingTop={1} flexShrink={0}>
           <Prompt
             ref={(r) => {
