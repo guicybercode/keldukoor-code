@@ -107,8 +107,14 @@ export function Home() {
   return (
     <>
       <box flexGrow={1} paddingLeft={2} paddingRight={2}>
+        <box flexDirection="row" justifyContent="flex-end" flexShrink={0}>
+          <text fg={theme.textMuted}>{directory()}</text>
+        </box>
         <box flexGrow={1} minHeight={0} />
-        <box width="100%" maxWidth={75} zIndex={1000} paddingTop={1} flexShrink={0}>
+        <Toast />
+      </box>
+      <box paddingLeft={2} paddingRight={2} paddingBottom={2} flexShrink={0}>
+        <box width="100%" zIndex={1000} flexShrink={0}>
           <Prompt
             ref={(r) => {
               prompt = r
@@ -118,15 +124,13 @@ export function Home() {
             workspaceID={route.workspaceID}
           />
         </box>
-        <box height={4} minHeight={0} width="100%" maxWidth={75} alignItems="center" paddingTop={3} flexShrink={1}>
+        <box height={4} minHeight={0} width="100%" alignItems="center" paddingTop={3} flexShrink={1}>
           <Show when={showTips()}>
             <Tips />
           </Show>
         </box>
-        <Toast />
       </box>
       <box paddingTop={1} paddingBottom={1} paddingLeft={2} paddingRight={2} flexDirection="row" flexShrink={0} gap={2}>
-        <text fg={theme.textMuted}>{directory()}</text>
         <box gap={1} flexDirection="row" flexShrink={0}>
           <Show when={mcp()}>
             <text fg={theme.text}>
